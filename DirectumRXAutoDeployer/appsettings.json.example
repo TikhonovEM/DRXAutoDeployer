@@ -1,0 +1,33 @@
+﻿{
+    "DevelopmentStudioSettings" : {
+        "ExePath" : "",
+        "PackageInfoPath": "",
+        "TempPackagesPath": "",
+        "SavePackageAfterDeploy": true
+    },
+    "DeploymentToolCoreSettings" : {
+        "ExePath" : "",
+        "Login": "",
+        "Password": ""
+    },
+    "GitRepositorySettings": {
+        "ExePath": null,
+        "SourcesPath" : "C:\\Sources",
+        "BranchName" : "develop"
+    },
+    "NotifiersSettings": [
+        {
+            "Target": "Telegram",
+            "Token": "",
+            "ChatIdentifier": ""
+        },
+        {
+            "Target": "AgileBoards",
+            "Token": "",
+            "ChatIdentifier": "",
+            "IntegrationServiceUri": "",
+            "ColumnFrom": "",
+            "ColumnTo": ""
+        }
+    ]
+}
