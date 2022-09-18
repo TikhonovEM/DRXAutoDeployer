@@ -83,13 +83,13 @@ namespace DirectumRXAutoDeployer.Deploy
             var stderr = gitProcess.StandardError.ReadToEnd();  // pick up STDERR
             var stdout = gitProcess.StandardOutput.ReadToEnd(); // pick up STDOUT
 
-            if (!string.IsNullOrEmpty(stderr) && !stderr.StartsWith("Already on"))
-                throw new Exception(stderr);
+            if (!string.IsNullOrEmpty(stderr))
+                _logger.LogWarning(stderr);
             
             if (!string.IsNullOrEmpty(stdout))
                 _logger.LogInformation(stdout);
 
-            gitProcess.WaitForExit();
+            gitProcess.WaitForExit(30000);
             gitProcess.Close();
         }
 
