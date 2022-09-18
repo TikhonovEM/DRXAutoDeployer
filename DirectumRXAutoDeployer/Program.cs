@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using DirectumRXAutoDeployer.Configuration;
 using DirectumRXAutoDeployer.Deploy;
-using DirectumRXAutoDeployer.Notifiers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -55,21 +52,8 @@ namespace DirectumRXAutoDeployer
             });
 
             services.AddSingleton<IDeployer, Deployer>();
-            
-            ConfigureNotifiers(services, appSettings.NotifiersSettings);
-        }
 
-        private static void ConfigureNotifiers(IServiceCollection services, List<NotifierSettings> settings)
-        {
-            foreach (var setting in settings)
-            {
-                var _ = setting.Target.ToLower() switch
-                {
-                    "telegram" => services.AddScoped<INotifier, TelegramBot>(),
-                    //"agileboards" => services.AddScoped<INotifier, AgileBoardsConnector>(),
-                    _ => services
-                };
-            }
+            services.AddNotifiers(appSettings);
         }
     }
 }

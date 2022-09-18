@@ -5,17 +5,20 @@ using System.Threading.Tasks;
 using DirectumRXAutoDeployer.Configuration;
 using Sungero.IntegrationService;
 using AgileBoards;
+using Microsoft.OData.Extensions.Client;
 
 namespace DirectumRXAutoDeployer.Notifiers
 {
     public class AgileBoardsConnector : INotifier
     {
-        private readonly Container _context;
+        private readonly IODataClientFactory _clientFactory;
+        private readonly string _agileBoardsServiceRoot;
 
-        public AgileBoardsConnector(AppSettings appSettings)
+        public AgileBoardsConnector(AppSettings appSettings, IODataClientFactory clientFactory)
         {
-            var settings = appSettings.NotifiersSettings.First(s => s.Target.ToLower().StartsWith("agileboards"));
-            _context = new Container(new Uri(settings.IntegrationServiceUri));
+            _clientFactory = clientFactory;
+            _agileBoardsServiceRoot = appSettings.NotifiersSettings.First(s => s.Target.ToLower() == "agileboards")
+                .IntegrationServiceUri;
         }
 
         public Task NotifyAboutStartAsync()
@@ -25,7 +28,8 @@ namespace DirectumRXAutoDeployer.Notifiers
 
         public Task NotifyAboutFinishAsync()
         {
-            _context.AgileBoards.MoveTicket("agile", 3, new List<int>() { 4 }, 14, 0);
+            var client = _clientFactory.CreateClient<Container>(new Uri(_agileBoardsServiceRoot), "AgileBoards");
+            client.AgileBoards.MoveTicket("agile", 3, new List<int>() { 4 }, 14, 0);
             return Task.CompletedTask;
         }
 
