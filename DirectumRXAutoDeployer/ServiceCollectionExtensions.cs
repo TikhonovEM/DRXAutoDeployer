@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
 using DirectumRXAutoDeployer.Configuration;
 using DirectumRXAutoDeployer.Notifiers;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,13 +33,20 @@ namespace DirectumRXAutoDeployer
         {
 
             services.AddODataClient("AgileBoards")
-                .ConfigureODataClient(dsc =>
+                .AddHttpClient()
+                .ConfigureHttpClient(client =>
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                        Convert.ToBase64String(Encoding.ASCII.GetBytes(settings.Token)));
+                });
+                /*.ConfigureODataClient(dsc =>
                 {
                     var credentials = settings.Token.Split(":");
                     dsc.Credentials = new NetworkCredential(credentials[0], credentials[1]);
-                });
+                });*/
 
             services.AddScoped<INotifier, AgileBoardsConnector>();
+            services.AddSingleton(AgileBoardSettings.FromNotifierSetting(settings));
 
             return services;
         }

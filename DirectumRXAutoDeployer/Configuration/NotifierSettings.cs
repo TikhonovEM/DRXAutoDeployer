@@ -8,5 +8,7 @@
         public string IntegrationServiceUri { get; set; }
         public string ColumnFrom { get; set; }
         public string ColumnTo { get; set; }
+        public string AppId { get; set; }
+        public int BoardId { get; set; }
     }
 }
