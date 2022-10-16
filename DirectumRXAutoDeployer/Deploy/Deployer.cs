@@ -42,7 +42,7 @@ namespace DirectumRXAutoDeployer.Deploy
                     await notifier.NotifyAboutErrorAsync(null);
                 return false;
             }
-            
+
 
             foreach (var notifier in _notifiers)
                 await notifier.NotifyAboutFinishAsync();
@@ -54,7 +54,7 @@ namespace DirectumRXAutoDeployer.Deploy
             _logger.LogInformation("PullUpdatesFromGit. Start");
             var gitSettings = _appSettings.GitRepositorySettings;
             ValidationHelper.ValidateGitSection(gitSettings, _logger);
-            
+
             var gitPsi = new ProcessStartInfo
             {
                 CreateNoWindow = true,
@@ -80,16 +80,24 @@ namespace DirectumRXAutoDeployer.Deploy
             gitProcess.StartInfo = gitPsi;
             gitProcess.Start();
 
-            var stderr = gitProcess.StandardError.ReadToEnd();  // pick up STDERR
+            var stderr = gitProcess.StandardError.ReadToEnd(); // pick up STDERR
             var stdout = gitProcess.StandardOutput.ReadToEnd(); // pick up STDOUT
 
             if (!string.IsNullOrEmpty(stderr))
                 _logger.LogWarning(stderr);
-            
+
             if (!string.IsNullOrEmpty(stdout))
                 _logger.LogInformation(stdout);
 
-            gitProcess.WaitForExit(30000);
+            gitProcess.StandardError.Close();
+            gitProcess.StandardOutput.Close();
+
+            if (!gitProcess.WaitForExit(30000))
+            {
+                gitProcess.Kill();
+                throw new TimeoutException($"Git command {command} exceeded timeout. Deployment aborted.");
+            }
+
             gitProcess.Close();
         }
 
@@ -98,10 +106,12 @@ namespace DirectumRXAutoDeployer.Deploy
             _logger.LogInformation("BuildDevelopmentPackage. Start");
             var ddsSettings = _appSettings.DevelopmentStudioSettings;
             ValidationHelper.ValidateDdsSection(ddsSettings, _logger);
-            
-            var tempPackagesPath = string.IsNullOrWhiteSpace(ddsSettings.TempPackagesPath) ? Path.GetTempPath() : ddsSettings.TempPackagesPath;
+
+            var tempPackagesPath = string.IsNullOrWhiteSpace(ddsSettings.TempPackagesPath)
+                ? Path.GetTempPath()
+                : ddsSettings.TempPackagesPath;
             _packagePath = Path.Combine(tempPackagesPath, $"DevelopmentPackage_{DateTime.Now:ddMMyy-HH-mm-ss}.dat");
-            
+
             var ddsPsi = new ProcessStartInfo
             {
                 CreateNoWindow = true,
@@ -115,25 +125,25 @@ namespace DirectumRXAutoDeployer.Deploy
             ddsProcess.StartInfo = ddsPsi;
             ddsProcess.Start();
 
-            var stderr = ddsProcess.StandardError.ReadToEnd();  // pick up STDERR
+            var stderr = ddsProcess.StandardError.ReadToEnd(); // pick up STDERR
             var stdout = ddsProcess.StandardOutput.ReadToEnd(); // pick up STDOUT
-            
+
             if (!string.IsNullOrEmpty(stderr))
                 throw new Exception(stderr);
-            
+
             if (!string.IsNullOrEmpty(stdout))
                 _logger.LogInformation(stdout);
 
             ddsProcess.WaitForExit();
             ddsProcess.Close();
-            
+
             _logger.LogInformation("BuildDevelopmentPackage. Finish");
         }
-        
+
         private void DeployDevelopmentPackage()
         {
             _logger.LogInformation("DeployDevelopmentPackage. Start");
-            
+
             var dtSection = _appSettings.DeploymentToolCoreSettings;
             ValidationHelper.ValidateDtSection(dtSection, _logger);
 
@@ -152,18 +162,18 @@ namespace DirectumRXAutoDeployer.Deploy
             dtProcess.StartInfo = dtPsi;
             dtProcess.Start();
 
-            var stderr = dtProcess.StandardError.ReadToEnd();  // pick up STDERR
+            var stderr = dtProcess.StandardError.ReadToEnd(); // pick up STDERR
             var stdout = dtProcess.StandardOutput.ReadToEnd(); // pick up STDOUT
-            
+
             if (!string.IsNullOrEmpty(stderr))
                 throw new Exception(stderr);
-            
+
             if (!string.IsNullOrEmpty(stdout))
                 _logger.LogInformation(stdout);
 
             dtProcess.WaitForExit();
             dtProcess.Close();
-            
+
             _logger.LogInformation("DeployDevelopmentPackage. Finish");
         }
     }
