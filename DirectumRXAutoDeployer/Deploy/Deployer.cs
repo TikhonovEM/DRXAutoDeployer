@@ -58,8 +58,6 @@ namespace DirectumRXAutoDeployer.Deploy
             var gitPsi = new ProcessStartInfo
             {
                 CreateNoWindow = true,
-                RedirectStandardError = true,
-                RedirectStandardOutput = true,
                 FileName = string.IsNullOrWhiteSpace(gitSettings.ExePath) ? "git.exe" : gitSettings.ExePath
             };
 
@@ -79,18 +77,6 @@ namespace DirectumRXAutoDeployer.Deploy
 
             gitProcess.StartInfo = gitPsi;
             gitProcess.Start();
-
-            var stderr = gitProcess.StandardError.ReadToEnd(); // pick up STDERR
-            var stdout = gitProcess.StandardOutput.ReadToEnd(); // pick up STDOUT
-
-            if (!string.IsNullOrEmpty(stderr))
-                _logger.LogWarning(stderr);
-
-            if (!string.IsNullOrEmpty(stdout))
-                _logger.LogInformation(stdout);
-
-            gitProcess.StandardError.Close();
-            gitProcess.StandardOutput.Close();
 
             if (!gitProcess.WaitForExit(30000))
             {
