@@ -2,44 +2,36 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DirectumRXAutoDeployer.Configuration;
 using Sungero.IntegrationService;
 using AgileBoards;
 using Microsoft.Extensions.Logging;
 using Microsoft.OData.Extensions.Client;
 using Sungero.IntegrationService.Models.Generated.AgileBoards;
-using Sungero.IntegrationService.Models.Generated.ProjectRequirement;
 
 namespace DirectumRXAutoDeployer.Notifiers
 {
     public class AgileBoardsConnector : INotifier
     {
         private readonly ILogger<AgileBoardsConnector> _logger;
-        private readonly IODataClientFactory _clientFactory;
+        private readonly Container _client;
         private readonly AgileBoardSettings _agileBoardsSettings;
+        private List<int> _ticketRefIds = new List<int>();
 
         public AgileBoardsConnector(ILogger<AgileBoardsConnector> logger, AgileBoardSettings settings, IODataClientFactory clientFactory)
         {
             _logger = logger;
-            _clientFactory = clientFactory;
             _agileBoardsSettings = settings;
+            _client = clientFactory.CreateClient<Container>(new Uri(_agileBoardsSettings.IntegrationServiceUri),
+                "AgileBoards");
+            
         }
 
-        public Task NotifyAboutStartAsync()
+        public async Task NotifyAboutStartAsync()
         {
-            return Task.CompletedTask;
-        }
-
-        public async Task NotifyAboutFinishAsync()
-        {
-            var client =
-                _clientFactory.CreateClient<Container>(new Uri(_agileBoardsSettings.IntegrationServiceUri),
-                    "AgileBoards");
-
-            var columnFrom = (await client.IColumns
+            var columnFrom = (await _client.IColumns
                     .Expand("Tickets")
                     .Where(c => c.Name == _agileBoardsSettings.ColumnFrom &&
-                                                              c.BoardId == _agileBoardsSettings.BoardId)
+                                c.BoardId == _agileBoardsSettings.BoardId)
                     .ExecuteAsync<IColumnDto>())
                 .FirstOrDefault();
 
@@ -49,14 +41,17 @@ namespace DirectumRXAutoDeployer.Notifiers
                 return;
             }
 
-            var ticketRefIds = columnFrom.Tickets.Select(t => t.Id).ToList();
+            _ticketRefIds = columnFrom.Tickets.Select(t => t.Id).ToList();
 
-            if (!ticketRefIds.Any())
+            if (!_ticketRefIds.Any())
             {
                 _logger.LogWarning("AgileBoardsConnector. Nothing to move from '{0}'",  _agileBoardsSettings.ColumnFrom);
             }
-            
-            var columnTo = (await client.IColumns.Where(c => c.Name == _agileBoardsSettings.ColumnTo &&
+        }
+
+        public async Task NotifyAboutFinishAsync()
+        {
+            var columnTo = (await _client.IColumns.Where(c => c.Name == _agileBoardsSettings.ColumnTo &&
                                                               c.BoardId == _agileBoardsSettings.BoardId).ExecuteAsync<IColumnDto>())
                 .FirstOrDefault();
             
@@ -66,24 +61,28 @@ namespace DirectumRXAutoDeployer.Notifiers
                 return;
             }
 
-            try
+            if (_ticketRefIds.Any())
             {
-                var result = await client.AgileBoards.MoveTicket(_agileBoardsSettings.AppId, _agileBoardsSettings.BoardId, ticketRefIds, columnTo.Id, 0)
-                    .GetValueAsync();
-                
-                _logger.LogInformation("Tickets with ids '{0}' moved from '{1}' to '{2}'. New ref ids - '{3}'", 
-                    string.Join(',', ticketRefIds), 
-                    _agileBoardsSettings.ColumnFrom, 
-                    _agileBoardsSettings.ColumnTo,
-                    string.Join(',', result.NewRefIds));
+                try
+                {
+                    var result = await _client.AgileBoards.MoveTicket(_agileBoardsSettings.AppId,
+                            _agileBoardsSettings.BoardId, _ticketRefIds, columnTo.Id, 0)
+                        .GetValueAsync();
+
+                    _logger.LogInformation("Tickets with ids '{0}' moved from '{1}' to '{2}'. New ref ids - '{3}'",
+                        string.Join(',', _ticketRefIds),
+                        _agileBoardsSettings.ColumnFrom,
+                        _agileBoardsSettings.ColumnTo,
+                        string.Join(',', result.NewRefIds));
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "An error occured while moving tickets");
+                }
             }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "An error occured while moving tickets");
-            }
-            
-            
-            
+
+
+
         }
 
         public Task NotifyAboutErrorAsync(string errorMessage)

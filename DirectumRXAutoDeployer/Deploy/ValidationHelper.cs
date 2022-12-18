@@ -12,10 +12,10 @@ namespace DirectumRXAutoDeployer.Deploy
                 throw new ArgumentNullException(nameof(dtSettings.ExePath));
             
             if (string.IsNullOrWhiteSpace(dtSettings.Login))
-                logger.LogWarning("Param \"Login\" is empty. Will be used default");
+                logger.LogWarning("DT param \"Login\" is empty. Will be used default");
             
             if (string.IsNullOrWhiteSpace(dtSettings.Password))
-                logger.LogWarning("Param \"Password\" is empty. Will be used default");
+                logger.LogWarning("DT param \"Password\" is empty. Will be used default");
         }
 
         public static void ValidateDdsSection(DevelopmentStudioSettings ddsSettings, ILogger logger)
@@ -27,19 +27,19 @@ namespace DirectumRXAutoDeployer.Deploy
                 throw new ArgumentNullException(nameof(ddsSettings.PackageInfoPath));
             
             if (string.IsNullOrWhiteSpace(ddsSettings.TempPackagesPath))
-                logger.LogWarning("Param \"TempPackagesPath\" is empty. Packages will be created in standard temp directory");
+                logger.LogWarning("DDS param \"TempPackagesPath\" is empty. Packages will be created in standard temp directory");
         }
         
         public static void ValidateGitSection(GitRepositorySettings gitSettings, ILogger logger)
         {
             if (string.IsNullOrWhiteSpace(gitSettings.ExePath))
-                logger.LogWarning("Param \"ExePath\" is empty. Will be used default");
+                logger.LogWarning("Git param \"ExePath\" is empty. Will be used default");
             
             if (string.IsNullOrWhiteSpace(gitSettings.SourcesPath))
                 throw new ArgumentNullException(nameof(gitSettings.SourcesPath));
             
             if (string.IsNullOrWhiteSpace(gitSettings.BranchName))
-                logger.LogWarning("Param \"BranchName\" is empty. Using default branch \"master\"");
+                logger.LogWarning("Git param \"BranchName\" is empty. Using default branch \"master\"");
         }
     }
 }

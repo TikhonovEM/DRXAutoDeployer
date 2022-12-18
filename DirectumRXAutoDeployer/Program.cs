@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using DirectumRXAutoDeployer.Configuration;
 using DirectumRXAutoDeployer.Deploy;
-using DirectumRXAutoDeployer.Notifiers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

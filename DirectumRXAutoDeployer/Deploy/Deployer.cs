@@ -84,7 +84,7 @@ namespace DirectumRXAutoDeployer.Deploy
                 throw new TimeoutException($"Git command {command} exceeded timeout. Deployment aborted.");
             }
 
-            gitProcess.Close();
+            gitProcess?.Dispose();
         }
 
         private void BuildDevelopmentPackage()
