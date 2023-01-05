@@ -107,23 +107,33 @@ namespace DirectumRXAutoDeployer.Deploy
                 Arguments = $"-d {_packagePath} -c {ddsSettings.PackageInfoPath}"
             };
 
-            var ddsProcess = new Process();
+            using var ddsProcess = new Process();
             ddsProcess.StartInfo = ddsPsi;
-            ddsProcess.Start();
+            try
+            {
+                ddsProcess.Start();
 
-            var stderr = ddsProcess.StandardError.ReadToEnd(); // pick up STDERR
-            var stdout = ddsProcess.StandardOutput.ReadToEnd(); // pick up STDOUT
+                var stderr = ddsProcess.StandardError.ReadToEnd(); // pick up STDERR
+                var stdout = ddsProcess.StandardOutput.ReadToEnd(); // pick up STDOUT
 
-            if (!string.IsNullOrEmpty(stderr))
-                throw new Exception(stderr);
+                if (!string.IsNullOrEmpty(stderr))
+                    throw new Exception(stderr);
 
-            if (!string.IsNullOrEmpty(stdout))
-                _logger.LogInformation(stdout);
+                if (!string.IsNullOrEmpty(stdout))
+                    _logger.LogInformation(stdout);
 
-            ddsProcess.WaitForExit();
-            ddsProcess.Close();
+                ddsProcess.WaitForExit();
+                _logger.LogInformation("BuildDevelopmentPackage. Finish");
 
-            _logger.LogInformation("BuildDevelopmentPackage. Finish");
+                if (ddsProcess.ExitCode > 0)
+                {
+                    throw new Exception($"An error occured while building dev package. Unexpected exit code - '{ddsProcess.ExitCode}'");
+                }
+            }
+            finally
+            {
+                ddsProcess?.Close();
+            }
         }
 
         private void DeployDevelopmentPackage()
@@ -132,6 +142,12 @@ namespace DirectumRXAutoDeployer.Deploy
 
             var dtSection = _appSettings.DeploymentToolCoreSettings;
             ValidationHelper.ValidateDtSection(dtSection, _logger);
+
+            if (string.IsNullOrEmpty(_packagePath))
+                throw new ArgumentNullException("_packagePath", "Package path is empty");
+
+            if (!File.Exists(_packagePath))
+                throw new IOException($"Package file does not exists");
 
             var login = string.IsNullOrWhiteSpace(dtSection.Login) ? "Administrator" : dtSection.Login;
             var password = string.IsNullOrWhiteSpace(dtSection.Password) ? "11111" : dtSection.Password;
@@ -144,23 +160,37 @@ namespace DirectumRXAutoDeployer.Deploy
                 Arguments = $"-n {login} -p {password} -d {_packagePath} -x"
             };
 
-            var dtProcess = new Process();
+            using var dtProcess = new Process();
             dtProcess.StartInfo = dtPsi;
-            dtProcess.Start();
+            try
+            {
+                dtProcess.Start();
 
-            var stderr = dtProcess.StandardError.ReadToEnd(); // pick up STDERR
-            var stdout = dtProcess.StandardOutput.ReadToEnd(); // pick up STDOUT
+                var stderr = dtProcess.StandardError.ReadToEnd(); // pick up STDERR
+                var stdout = dtProcess.StandardOutput.ReadToEnd(); // pick up STDOUT
 
-            if (!string.IsNullOrEmpty(stderr))
-                throw new Exception(stderr);
+                if (!string.IsNullOrEmpty(stderr))
+                    throw new Exception(stderr);
 
-            if (!string.IsNullOrEmpty(stdout))
-                _logger.LogInformation(stdout);
+                if (!string.IsNullOrEmpty(stdout))
+                    _logger.LogInformation(stdout);
 
-            dtProcess.WaitForExit();
-            dtProcess.Close();
+                dtProcess.WaitForExit();
+                _logger.LogInformation("DeployDevelopmentPackage. Finish");
+                
+                if (dtProcess.ExitCode > 0)
+                {
+                    throw new Exception($"An error occured while building dev package. Unexpected exit code - '{dtProcess.ExitCode}'");
+                }
+            }
+            finally
+            {
+                dtProcess?.Close();
+            }
+            
+            
 
-            _logger.LogInformation("DeployDevelopmentPackage. Finish");
+            
         }
     }
 }
