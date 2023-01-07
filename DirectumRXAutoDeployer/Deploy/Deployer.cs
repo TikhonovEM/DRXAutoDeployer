@@ -58,11 +58,11 @@ namespace DirectumRXAutoDeployer.Deploy
             var gitPsi = new ProcessStartInfo
             {
                 CreateNoWindow = true,
-                FileName = string.IsNullOrWhiteSpace(gitSettings.ExePath) ? "git.exe" : gitSettings.ExePath
+                FileName = gitSettings.ExePath
             };
 
             var sourcesPath = gitSettings.SourcesPath;
-            var branch = string.IsNullOrWhiteSpace(gitSettings.BranchName) ? "master" : gitSettings.BranchName;
+            var branch = gitSettings.BranchName;
             ExecuteGitCommand(gitPsi, $"checkout {branch}", sourcesPath);
             ExecuteGitCommand(gitPsi, "pull", sourcesPath);
             _logger.LogInformation("PullUpdatesFromGit. Finish");
@@ -149,8 +149,8 @@ namespace DirectumRXAutoDeployer.Deploy
             if (!File.Exists(_packagePath))
                 throw new IOException($"Package file does not exists");
 
-            var login = string.IsNullOrWhiteSpace(dtSection.Login) ? "Administrator" : dtSection.Login;
-            var password = string.IsNullOrWhiteSpace(dtSection.Password) ? "11111" : dtSection.Password;
+            var login = dtSection.Login;
+            var password = dtSection.Password;
             var dtPsi = new ProcessStartInfo
             {
                 CreateNoWindow = true,
