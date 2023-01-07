@@ -42,7 +42,7 @@ namespace DirectumRXAutoDeployer
                 .Build();
 
             var appSettings = configuration.Get<AppSettings>();
-            services.AddScoped(_ => appSettings);
+            services.AddSingleton(appSettings);
 
             services.AddLogging(loggingBuilder =>
             {
@@ -54,7 +54,7 @@ namespace DirectumRXAutoDeployer
 
             services.AddSingleton<IDeployer, Deployer>();
 
-            services.AddNotifiers(appSettings);
+            services.AddNotifiers(configuration);
         }
     }
 }

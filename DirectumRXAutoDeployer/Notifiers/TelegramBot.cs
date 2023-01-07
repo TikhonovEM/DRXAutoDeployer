@@ -11,9 +11,8 @@ namespace DirectumRXAutoDeployer.Notifiers
         private readonly TelegramBotClient _botClient;
         private readonly string _chatId;
 
-        public TelegramBot(AppSettings appSettings)
+        public TelegramBot(TelegramSettings settings)
         {
-            var settings = appSettings.NotifiersSettings.First(s => s.Target.ToLower().StartsWith("telegram"));
             _botClient = new TelegramBotClient(settings.Token);
             _chatId = settings.ChatIdentifier;
         }

@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using DirectumRXAutoDeployer.Configuration;
 using DirectumRXAutoDeployer.Notifiers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Extensions.Client;
 
@@ -11,16 +12,21 @@ namespace DirectumRXAutoDeployer
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddNotifiers(this IServiceCollection services, AppSettings appSettings)
+        private const string SectionName = "NotifiersSettings";
+
+        private const string SectionTargetKey = "Target";
+        public static IServiceCollection AddNotifiers(this IServiceCollection services, IConfigurationRoot configuration)
         {
-            if (appSettings?.NotifiersSettings == null)
+            var notifiersSection = configuration.GetSection(SectionName);
+            
+            if (notifiersSection == null)
                 return services;
             
-            foreach (var setting in appSettings.NotifiersSettings)
+            foreach (var setting in notifiersSection.GetChildren())
             {
-                var _ = setting.Target.ToLower() switch
+                var _ = setting.GetValue(SectionTargetKey, string.Empty).ToLower() switch
                 {
-                    "telegram" => services.AddScoped<INotifier, TelegramBot>(),
+                    "telegram" => services.AddTelegramBot(setting),
                     "agileboards" => services.AddAgileBoardsODataClient(setting),
                     _ => services
                 };
@@ -29,24 +35,31 @@ namespace DirectumRXAutoDeployer
             return services;
         }
 
-        public static IServiceCollection AddAgileBoardsODataClient(this IServiceCollection services, NotifierSettings settings)
+        public static IServiceCollection AddTelegramBot(this IServiceCollection services, IConfigurationSection telegramSection)
+        {
+            var telegramSettings = telegramSection.Get<TelegramSettings>();
+            services.AddSingleton(telegramSettings);
+            services.AddScoped<INotifier, TelegramBot>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddAgileBoardsODataClient(this IServiceCollection services, IConfigurationSection agileSection)
         {
 
+            var agileSettings = agileSection.Get<AgileBoardSettings>();
+
+            services.AddSingleton(agileSettings);
+            
             services.AddODataClient("AgileBoards")
                 .AddHttpClient()
                 .ConfigureHttpClient(client =>
                 {
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
-                        Convert.ToBase64String(Encoding.ASCII.GetBytes(settings.Token)));
+                        Convert.ToBase64String(Encoding.ASCII.GetBytes(agileSettings.Token)));
                 });
-                /*.ConfigureODataClient(dsc =>
-                {
-                    var credentials = settings.Token.Split(":");
-                    dsc.Credentials = new NetworkCredential(credentials[0], credentials[1]);
-                });*/
 
             services.AddScoped<INotifier, AgileBoardsConnector>();
-            services.AddSingleton(AgileBoardSettings.FromNotifierSetting(settings));
 
             return services;
         }

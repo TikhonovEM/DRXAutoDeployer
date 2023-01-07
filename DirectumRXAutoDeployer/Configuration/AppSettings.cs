@@ -7,6 +7,5 @@ namespace DirectumRXAutoDeployer.Configuration
         public DevelopmentStudioSettings DevelopmentStudioSettings { get; set; }
         public GitRepositorySettings GitRepositorySettings { get; set; }
         public DeploymentToolCoreSettings DeploymentToolCoreSettings { get; set; }
-        public List<NotifierSettings> NotifiersSettings { get; set; }
     }
 }
