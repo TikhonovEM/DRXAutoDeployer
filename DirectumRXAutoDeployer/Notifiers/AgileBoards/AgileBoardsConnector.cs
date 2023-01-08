@@ -2,89 +2,70 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AgileBoards;
+using DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers;
 using Microsoft.Extensions.Logging;
 using Microsoft.OData.Extensions.Client;
 using Sungero.IntegrationService;
-using Sungero.IntegrationService.Models.Generated.AgileBoards;
 
 namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
 {
     public class AgileBoardsConnector : INotifier
     {
         private readonly ILogger<AgileBoardsConnector> _logger;
-        private readonly Container _client;
         private readonly AgileBoardSettings _agileBoardsSettings;
-        private List<int> _ticketRefIds = new List<int>();
+        private readonly List<IActionHandler> _actionHandlers = new List<IActionHandler>();
 
         public AgileBoardsConnector(ILogger<AgileBoardsConnector> logger, AgileBoardSettings settings, IODataClientFactory clientFactory)
         {
             _logger = logger;
             _agileBoardsSettings = settings;
-            _client = clientFactory.CreateClient<Container>(new Uri(_agileBoardsSettings.IntegrationServiceUri),
+            var client = clientFactory.CreateClient<Container>(new Uri(_agileBoardsSettings.IntegrationServiceUri),
                 "AgileBoards");
+            
+            if (_agileBoardsSettings.Actions == null || !_agileBoardsSettings.Actions.Any())
+            {
+                _logger.LogWarning("List of actions is empty. Nothing to update.");
+                return;
+            }
+
+            foreach (var action in settings.Actions)
+            {
+                switch (action.Target)
+                {
+                    case ActionTarget.Column: 
+                        _actionHandlers.Add(new ColumnActionHandler(logger, client, settings, action));
+                        break;
+                    
+                    case ActionTarget.Mark: 
+                        _actionHandlers.Add(new MarkActionHandler(logger, client, settings, action));
+                        break;
+                    default: break;
+                }
+            }
             
         }
 
         public async Task NotifyAboutStartAsync()
         {
-            var columnFrom = (await _client.IColumns
-                    .Expand("Tickets")
-                    .Where(c => c.Name == _agileBoardsSettings.ColumnFrom &&
-                                c.BoardId == _agileBoardsSettings.BoardId)
-                    .ExecuteAsync<IColumnDto>())
-                .FirstOrDefault();
-
-            if (columnFrom == null)
+            if (_agileBoardsSettings.Actions == null || !_agileBoardsSettings.Actions.Any())
             {
-                _logger.LogError("AgileBoardsConnector. Column with name '{0}' not found",  _agileBoardsSettings.ColumnFrom);
+                _logger.LogWarning("List of actions is empty. Nothing to update.");
                 return;
             }
 
-            _ticketRefIds = columnFrom.Tickets.Select(t => t.Id).ToList();
-
-            if (!_ticketRefIds.Any())
-            {
-                _logger.LogWarning("AgileBoardsConnector. Nothing to move from '{0}'",  _agileBoardsSettings.ColumnFrom);
-            }
+            foreach (var actionHandler in _actionHandlers)
+                await actionHandler.HandleStartAsync();
         }
 
         public async Task NotifyAboutFinishAsync()
         {
-            var columnTo = (await _client.IColumns.Where(c => c.Name == _agileBoardsSettings.ColumnTo &&
-                                                              c.BoardId == _agileBoardsSettings.BoardId).ExecuteAsync<IColumnDto>())
-                .FirstOrDefault();
-            
-            if (columnTo == null)
-            {
-                _logger.LogError("AgileBoardsConnector. Column with name '{0}' not found",  _agileBoardsSettings.ColumnTo);
+            if (_agileBoardsSettings.Actions == null || !_agileBoardsSettings.Actions.Any())
                 return;
-            }
 
-            if (_ticketRefIds.Any())
-            {
-                try
-                {
-                    var result = await _client.AgileBoards.MoveTicket(_agileBoardsSettings.AppId,
-                            _agileBoardsSettings.BoardId, _ticketRefIds, columnTo.Id, 0)
-                        .GetValueAsync();
-
-                    _logger.LogInformation("Tickets with ids '{0}' moved from '{1}' to '{2}'. New ref ids - '{3}'",
-                        string.Join(',', _ticketRefIds),
-                        _agileBoardsSettings.ColumnFrom,
-                        _agileBoardsSettings.ColumnTo,
-                        string.Join(',', result.NewRefIds));
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "An error occured while moving tickets");
-                }
-            }
-
-
-
+            foreach (var actionHandler in _actionHandlers)
+                await actionHandler.HandleFinishAsync();
         }
-
+        
         public Task NotifyAboutErrorAsync(string errorMessage)
         {
             return Task.CompletedTask;

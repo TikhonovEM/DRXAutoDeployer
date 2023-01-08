@@ -1,8 +1,8 @@
 ﻿namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
 {
-    public class AgileBoardActionSetting
+    public class ActionSetting
     {
-        public AgileBoardActionTarget Target { get; set; }
+        public ActionTarget Target { get; set; }
 
         public string ColumnFrom { get; set; }
         
@@ -10,6 +10,6 @@
         
         public string MarkName { get; set; }
 
-        public AgileBoardMarkActionType Type { get; set; }
+        public MarkActionType Type { get; set; }
     }
 }

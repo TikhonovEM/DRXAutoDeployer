@@ -1,6 +1,6 @@
 ﻿namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
 {
-    public enum AgileBoardActionTarget : byte
+    public enum ActionTarget : byte
     {
         Column,
         Mark
