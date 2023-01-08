@@ -1,4 +1,6 @@
-﻿namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
+﻿using System.Collections.Generic;
+
+namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
 {
     public class AgileBoardSettings
     {
@@ -8,5 +10,7 @@
         public string ColumnFrom { get; set; }
         public string ColumnTo { get; set; }
         public string AppId { get; set; }
+
+        public List<AgileBoardActionSetting> Actions { get; set; }
     }
 }

@@ -17,6 +17,8 @@ namespace DirectumRXAutoDeployer
         private const string SectionName = "NotifiersSettings";
 
         private const string SectionTargetKey = "Target";
+        
+        
         public static IServiceCollection AddNotifiers(this IServiceCollection services, IConfigurationRoot configuration)
         {
             var notifiersSection = configuration.GetSection(SectionName);
