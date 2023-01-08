@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Sungero.IntegrationService;
 using AgileBoards;
 using Microsoft.Extensions.Logging;
 using Microsoft.OData.Extensions.Client;
+using Sungero.IntegrationService;
 using Sungero.IntegrationService.Models.Generated.AgileBoards;
 
-namespace DirectumRXAutoDeployer.Notifiers
+namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
 {
     public class AgileBoardsConnector : INotifier
     {

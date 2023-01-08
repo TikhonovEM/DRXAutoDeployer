@@ -1,10 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
-using DirectumRXAutoDeployer.Configuration;
+﻿using System.Threading.Tasks;
 using Telegram.Bot;
 
-namespace DirectumRXAutoDeployer.Notifiers
+namespace DirectumRXAutoDeployer.Notifiers.Telegram
 {
     public class TelegramBot : INotifier
     {

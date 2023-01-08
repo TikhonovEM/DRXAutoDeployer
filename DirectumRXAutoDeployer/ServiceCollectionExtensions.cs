@@ -4,6 +4,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using DirectumRXAutoDeployer.Configuration;
 using DirectumRXAutoDeployer.Notifiers;
+using DirectumRXAutoDeployer.Notifiers.AgileBoards;
+using DirectumRXAutoDeployer.Notifiers.Telegram;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Extensions.Client;

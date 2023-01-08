@@ -1,4 +1,4 @@
-﻿namespace DirectumRXAutoDeployer.Notifiers
+﻿namespace DirectumRXAutoDeployer.Notifiers.Telegram
 {
     public class TelegramSettings
     {

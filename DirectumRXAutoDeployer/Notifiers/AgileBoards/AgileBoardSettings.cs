@@ -1,8 +1,4 @@
-﻿using System.Dynamic;
-using System.Net;
-using DirectumRXAutoDeployer.Configuration;
-
-namespace DirectumRXAutoDeployer.Notifiers
+﻿namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
 {
     public class AgileBoardSettings
     {
