@@ -36,8 +36,8 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
                         _actionHandlers.Add(new ColumnActionHandler(logger, client, settings, action));
                         break;
                     
-                    case ActionTarget.Mark: 
-                        _actionHandlers.Add(new MarkActionHandler(logger, client, settings, action));
+                    case ActionTarget.Tag: 
+                        _actionHandlers.Add(new TagActionHandler(logger, client, settings, action));
                         break;
                     default: break;
                 }

@@ -5,14 +5,14 @@ using Sungero.IntegrationService;
 
 namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
 {
-    public class MarkActionHandler : IActionHandler
+    public class TagActionHandler : IActionHandler
     {
         private readonly ILogger _logger;
         private readonly Container _client;
         private readonly AgileBoardSettings _agileBoardsSettings;
         private readonly ActionSetting _action;
 
-        public MarkActionHandler(ILogger logger, Container client, AgileBoardSettings agileBoardsSettings, ActionSetting action)
+        public TagActionHandler(ILogger logger, Container client, AgileBoardSettings agileBoardsSettings, ActionSetting action)
         {
             _logger = logger;
             _client = client;

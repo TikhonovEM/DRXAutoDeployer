@@ -3,6 +3,6 @@
     public enum ActionTarget : byte
     {
         Column,
-        Mark
+        Tag
     }
 }
