@@ -65,6 +65,7 @@ namespace DirectumRXAutoDeployer.Deploy
             var branch = gitSettings.BranchName;
             ExecuteGitCommand(gitPsi, $"checkout {branch}", sourcesPath);
             ExecuteGitCommand(gitPsi, "pull", sourcesPath);
+            ExecuteGitCommand(gitPsi, "clean -x -d -f", sourcesPath);
             _logger.LogInformation("PullUpdatesFromGit. Finish");
         }
 
