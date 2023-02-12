@@ -148,7 +148,7 @@ namespace DirectumRXAutoDeployer.Deploy
                 throw new ArgumentNullException("_packagePath", "Package path is empty");
 
             if (!File.Exists(_packagePath))
-                throw new IOException($"Package file does not exists");
+                throw new IOException("Package file does not exists");
 
             var login = dtSection.Login;
             var password = dtSection.Password;
@@ -188,10 +188,18 @@ namespace DirectumRXAutoDeployer.Deploy
             {
                 dtProcess?.Close();
             }
-            
-            
 
-            
+            if (!_appSettings.DevelopmentStudioSettings.SavePackageAfterDeploy && File.Exists(_packagePath))
+            {
+                try
+                {
+                    File.Delete(_packagePath);
+                }
+                catch (Exception e)
+                {
+                    // ignored
+                }
+            }
         }
     }
 }
