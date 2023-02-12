@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers;
 using Microsoft.Extensions.Logging;
+using Microsoft.OData.Client;
 using Microsoft.OData.Extensions.Client;
 using Sungero.IntegrationService;
 
@@ -21,6 +22,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
             _agileBoardsSettings = settings;
             var client = clientFactory.CreateClient<Container>(new Uri(_agileBoardsSettings.IntegrationServiceUri),
                 "AgileBoards");
+            client.MergeOption = MergeOption.PreserveChanges;
             
             if (_agileBoardsSettings.Actions == null || !_agileBoardsSettings.Actions.Any())
             {

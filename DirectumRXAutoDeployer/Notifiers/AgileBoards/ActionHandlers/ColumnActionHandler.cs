@@ -39,14 +39,14 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
 
             if (columnFrom == null)
             {
-                _logger.LogError("AgileBoardsConnector. Column with name '{0}' not found",  _agileBoardsSettings.ColumnFrom);
+                _logger.LogError("ColumnActionHandler. Column with name '{0}' not found",  _agileBoardsSettings.ColumnFrom);
                 return;
             }
 
             _ticketRefIds = columnFrom.Tickets.Select(t => t.Id).ToList();
 
             if (!_ticketRefIds.Any())
-                _logger.LogWarning("AgileBoardsConnector. Nothing to move from '{0}'",  _agileBoardsSettings.ColumnFrom);
+                _logger.LogWarning("ColumnActionHandler. Nothing to move from '{0}'",  _agileBoardsSettings.ColumnFrom);
         }
 
         public async Task HandleFinishAsync()
@@ -60,7 +60,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
             
             if (columnTo == null)
             {
-                _logger.LogError("AgileBoardsConnector. Column with name '{0}' not found",  _agileBoardsSettings.ColumnTo);
+                _logger.LogError("ColumnActionHandler. Column with name '{0}' not found",  _agileBoardsSettings.ColumnTo);
                 return;
             }
 
