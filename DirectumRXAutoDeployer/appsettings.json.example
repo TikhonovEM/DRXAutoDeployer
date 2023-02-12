@@ -1,33 +1,45 @@
 ﻿{
-    "DevelopmentStudioSettings" : {
-        "ExePath" : "",
-        "PackageInfoPath": "",
-        "TempPackagesPath": "",
-        "SavePackageAfterDeploy": true
+    "DevelopmentStudioSettings" : { // Секция с настройками DevelopmentStudio для сброки пакета
+        "ExePath" : "", // Путь до файла DevelopmentStudio.exe
+        "PackageInfoPath": "", // Путь до xml с описанием пакета
+        "TempPackagesPath": "", // Путь, куда будут складываться пакеты для публикации. По умолчанию, папка temp
+        "SavePackageAfterDeploy": true // Признак необходимости сохранения созданных пакетов после публикации
     },
-    "DeploymentToolCoreSettings" : {
-        "ExePath" : "",
-        "Login": "",
-        "Password": ""
+    "DeploymentToolCoreSettings" : { // Секция с настройками DeploymentToolCore для публикации пакета
+        "ExePath" : "", // Путь до файла DeploymentToolCore.exe
+        "Login": "", // Логин пользователя , под кем производится публикация. По умолчанию, Administrator
+        "Password": "" // Пароль пользователя , под кем производится публикация. По умолчанию, 11111
     },
-    "GitRepositorySettings": {
-        "ExePath": null,
-        "SourcesPath" : "C:\\Sources",
-        "BranchName" : "develop"
+    "GitRepositorySettings": { // Секция с настройками репозитория для сброки пакета
+        "ExePath": "", // Путь до файла git.exe, на случай если он не добавлен в PATH. Если добавлен, то параметр указывать не нужно
+        "SourcesPath" : "C:\\Sources", // Путь до репозитория
+        "BranchName" : "develop" // Имя ветки, из которой необходимо собирать пакет. По умолчанию, master
     },
-    "NotifiersSettings": [
-        {
-            "Target": "Telegram",
-            "Token": "",
-            "ChatIdentifier": ""
+    "NotifiersSettings": [ // Секция настроек уведомлений. На текущий момент реализованы уведомлений в Telegram и agile-доски Directum RX
+        { // Секция с настройками уведомлений в Telegram
+            "Target": "Telegram", 
+            "Token": "", // Токен бота, который будет слать уведомления.
+            "ChatIdentifier": "" // Идентификатор чата, куда бот будет слать уведомления.
         },
-        {
+        { // Секция с настройками работы с Agile-досками
             "Target": "AgileBoards",
-            "Token": "",
-            "ChatIdentifier": "",
-            "IntegrationServiceUri": "",
-            "ColumnFrom": "",
-            "ColumnTo": ""
+            "Token": "", // Логин и пароль пользователя, под который будет вестить работа, через ":"
+            "IntegrationServiceUri": "", // Адрес до сервиса интеграции Directum RX, где развернуты доски
+            "BoardId": 3, // Идентификатор доски
+            "AppId": "946ad232-32ba-8c3b-49e3-c340c1fc022c", // Идентификатор тенанта. Не знаю, где задается, вытащил его через консоль браузера в любом запросе досок
+            "Actions": [ // Секция с настройками действий на доске. на текущий момент поддерживается передвижение тикетов между колонками и удаление/добавление меток на тикеты колонки
+                {
+                    "Target": "Column", // Таргет действия, Возможные значения - Column и Tag
+                    "ColumnFrom": "Рецензирование завершено", // Имя колонки, откуда необходимо передвинуть все тикеты
+                    "ColumnTo": "Можно брать в тестирование" // Имя колонки, куда необходимо передвинуть тикеты
+                },
+                {
+                    "Target": "Tag",
+                    "Type": "Remove", // Варианты действия с меткой. Возможные значения - Add и Remove
+                    "ColumnFrom": "Тестирование", // Имя колонки, где необходимо добавить/удалить метку на тикеты
+                    "TagName": "На перенос" // Имя метки
+                }
+            ]
         }
     ]
 }
