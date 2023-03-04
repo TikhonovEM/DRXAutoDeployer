@@ -173,15 +173,15 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
                 try
                 {
                     var addUri = string.Format(addUriTemplate, ticketId);
-                    var ticketIdOObject = new { Id = ticketId };
+                    var ticketIdObject = new { Id = ticketId };
                     var tagIdObject = new { Id = tag.Id };
-                    var requestObject = new { Ticket = ticketIdOObject, TicketTag = tagIdObject };
+                    var requestObject = new { Ticket = ticketIdObject, TicketTag = tagIdObject };
                     var request = new StringContent(JsonConvert.SerializeObject(requestObject), Encoding.UTF8, "application/json");
                     var response = await httpClient.PostAsync(addUri, request);
                     if (response.IsSuccessStatusCode)
                         successfulAddedIds.Add(ticketId);
                 }
-                catch (Exception e)
+                catch
                 {
                     _logger.LogWarning("TagActionHandler. Cannot add tag to ticket {0}", ticketId);
                 }

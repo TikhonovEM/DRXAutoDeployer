@@ -49,21 +49,12 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
 
         public async Task NotifyAboutStartAsync()
         {
-            if (_agileBoardsSettings.Actions == null || !_agileBoardsSettings.Actions.Any())
-            {
-                _logger.LogWarning("List of actions is empty. Nothing to update.");
-                return;
-            }
-
             foreach (var actionHandler in _actionHandlers)
                 await actionHandler.HandleStartAsync();
         }
 
         public async Task NotifyAboutFinishAsync()
         {
-            if (_agileBoardsSettings.Actions == null || !_agileBoardsSettings.Actions.Any())
-                return;
-
             foreach (var actionHandler in _actionHandlers)
                 await actionHandler.HandleFinishAsync();
         }

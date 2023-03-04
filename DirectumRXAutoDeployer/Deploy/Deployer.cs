@@ -197,7 +197,7 @@ namespace DirectumRXAutoDeployer.Deploy
                 }
                 catch (Exception e)
                 {
-                    // ignored
+                    _logger.LogError(e, "Cannot delete development package");
                 }
             }
         }
