@@ -1,9 +1,11 @@
-﻿namespace DirectumRXAutoDeployer.Configuration
+﻿using System.Collections.Generic;
+
+namespace DirectumRXAutoDeployer.Configuration
 {
-    public class GitRepositorySettings
+    public class GitRepositoriesSettings
     {
         public string ExePath { get; set; } = "git.exe";
-        public string SourcesPath { get; set; }
-        public string BranchName { get; set; } = "master";
+
+        public List<RepositorySetting> Repositories { get; set; }
     }
 }

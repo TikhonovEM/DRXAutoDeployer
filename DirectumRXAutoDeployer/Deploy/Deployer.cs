@@ -52,7 +52,7 @@ namespace DirectumRXAutoDeployer.Deploy
         private void PullUpdatesFromGit()
         {
             _logger.LogInformation("PullUpdatesFromGit. Start");
-            var gitSettings = _appSettings.GitRepositorySettings;
+            var gitSettings = _appSettings.GitRepositoriesSettings;
             ValidationHelper.ValidateGitSection(gitSettings, _logger);
 
             var gitPsi = new ProcessStartInfo
@@ -61,12 +61,17 @@ namespace DirectumRXAutoDeployer.Deploy
                 FileName = gitSettings.ExePath
             };
 
-            var sourcesPath = gitSettings.SourcesPath;
-            var branch = gitSettings.BranchName;
-            ExecuteGitCommand(gitPsi, "reset --hard", sourcesPath);
-            ExecuteGitCommand(gitPsi, $"checkout {branch}", sourcesPath);
-            ExecuteGitCommand(gitPsi, "pull", sourcesPath);
-            ExecuteGitCommand(gitPsi, "clean -x -d -f", sourcesPath);
+            foreach (var repository in gitSettings.Repositories)
+            {
+                var sourcesPath = repository.SourcesPath;
+                var branch = repository.BranchName;
+                ExecuteGitCommand(gitPsi, "reset --hard", sourcesPath);
+                ExecuteGitCommand(gitPsi, $"checkout {branch}", sourcesPath);
+                ExecuteGitCommand(gitPsi, "pull", sourcesPath);
+                ExecuteGitCommand(gitPsi, "clean -x -d -f", sourcesPath);
+            }
+
+
             _logger.LogInformation("PullUpdatesFromGit. Finish");
         }
 
@@ -129,7 +134,8 @@ namespace DirectumRXAutoDeployer.Deploy
 
                 if (ddsProcess.ExitCode > 0)
                 {
-                    throw new Exception($"An error occured while building dev package. Unexpected exit code - '{ddsProcess.ExitCode}'");
+                    throw new Exception(
+                        $"An error occured while building dev package. Unexpected exit code - '{ddsProcess.ExitCode}'");
                 }
             }
             finally
@@ -179,10 +185,11 @@ namespace DirectumRXAutoDeployer.Deploy
 
                 dtProcess.WaitForExit();
                 _logger.LogInformation("DeployDevelopmentPackage. Finish");
-                
+
                 if (dtProcess.ExitCode > 0)
                 {
-                    throw new Exception($"An error occured while building dev package. Unexpected exit code - '{dtProcess.ExitCode}'");
+                    throw new Exception(
+                        $"An error occured while building dev package. Unexpected exit code - '{dtProcess.ExitCode}'");
                 }
             }
             finally

@@ -30,16 +30,20 @@ namespace DirectumRXAutoDeployer.Deploy
                 logger.LogWarning("DDS param \"TempPackagesPath\" is empty. Packages will be created in standard temp directory");
         }
         
-        public static void ValidateGitSection(GitRepositorySettings gitSettings, ILogger logger)
+        public static void ValidateGitSection(GitRepositoriesSettings gitSettings, ILogger logger)
         {
             if (string.IsNullOrWhiteSpace(gitSettings.ExePath))
                 logger.LogWarning("Git param \"ExePath\" is empty. Will be used default");
+
+            foreach (var repository in gitSettings.Repositories)
+            {
+                if (string.IsNullOrWhiteSpace(repository.SourcesPath))
+                    throw new ArgumentNullException(nameof(repository.SourcesPath));
             
-            if (string.IsNullOrWhiteSpace(gitSettings.SourcesPath))
-                throw new ArgumentNullException(nameof(gitSettings.SourcesPath));
+                if (string.IsNullOrWhiteSpace(repository.BranchName))
+                    logger.LogWarning($"Git param \"BranchName\" in {repository.SourcesPath} is empty. Using default branch \"master\""); 
+            }
             
-            if (string.IsNullOrWhiteSpace(gitSettings.BranchName))
-                logger.LogWarning("Git param \"BranchName\" is empty. Using default branch \"master\"");
         }
     }
 }
