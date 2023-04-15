@@ -2,10 +2,16 @@
 
 namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
 {
-    public class TicketInfo
+    public struct TicketInfo
     {
-        public string Name { get; set; }
-        public string Hyperlink { get; set; }
+        public string Name { get; }
+        public string Hyperlink { get; }
+
+        public TicketInfo(string name, string hyperlink)
+        {
+            Name = name;
+            Hyperlink = hyperlink;
+        }
 
         public override string ToString()
         {

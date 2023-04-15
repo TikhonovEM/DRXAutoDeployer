@@ -16,7 +16,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
         private readonly AgileBoardSettings _agileBoardsSettings;
         private readonly List<IActionHandler> _actionHandlers = new List<IActionHandler>();
 
-        public AgileBoardsConnector(ILogger<AgileBoardsConnector> logger, AgileBoardSettings settings, IODataClientFactory clientFactory)
+        public AgileBoardsConnector(ILogger<AgileBoardsConnector> logger, AgileBoardSettings settings, IODataClientFactory clientFactory, IEnumerable<INotifier> notifiers)
         {
             _logger = logger;
             _agileBoardsSettings = settings;
@@ -29,6 +29,11 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
                 _logger.LogWarning("List of actions is empty. Nothing to update.");
                 return;
             }
+
+            var summaryTarget = (IMessengerNotifier)null;
+            if (!string.IsNullOrWhiteSpace(settings.SummaryTarget))
+                summaryTarget = (IMessengerNotifier)notifiers
+                    .FirstOrDefault(n => n is IMessengerNotifier);
 
             foreach (var action in settings.Actions)
             {

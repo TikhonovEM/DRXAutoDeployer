@@ -3,7 +3,7 @@ using Telegram.Bot;
 
 namespace DirectumRXAutoDeployer.Notifiers.Telegram
 {
-    public class TelegramBot : INotifier
+    public class TelegramBot : IMessengerNotifier
     {
         private readonly TelegramBotClient _botClient;
         private readonly string _chatId;
@@ -33,6 +33,11 @@ namespace DirectumRXAutoDeployer.Notifiers.Telegram
         public async Task NotifyAboutErrorAsync(string errorMessage)
         {
             await _botClient.SendTextMessageAsync(_chatId, string.IsNullOrEmpty(errorMessage) ? _errorMessage : errorMessage);
+        }
+
+        public async Task SendMessage(string message)
+        {
+            await _botClient.SendTextMessageAsync(_chatId, message);
         }
     }
 }

@@ -18,6 +18,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
         private readonly string _columnFrom;
         private readonly string _columnTo;
         private List<int> _ticketRefIds = new List<int>();
+        private List<TicketInfo> _ticketInfos = new List<TicketInfo>();
 
         public ColumnActionHandler(ILogger logger, Container client, AgileBoardSettings agileBoardsSettings, ActionSetting action)
         {
@@ -31,7 +32,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
         public async Task HandleStartAsync()
         {
             var columnFrom = (await _client.IColumns
-                    .Expand("Tickets")
+                    .Expand("Tickets($expand=Ticket)")
                     .Where(c => c.Name == _columnFrom &&
                                 c.BoardId == _agileBoardsSettings.BoardId)
                     .ExecuteAsync<IColumnDto>())
@@ -44,6 +45,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
             }
 
             _ticketRefIds = columnFrom.Tickets.Select(t => t.Id).ToList();
+            _ticketInfos = columnFrom.Tickets.Select(t => new TicketInfo(t.Ticket.Name, null)).ToList();
 
             if (!_ticketRefIds.Any())
                 _logger.LogWarning("ColumnActionHandler. Nothing to move from '{0}'",  _agileBoardsSettings.ColumnFrom);
@@ -83,6 +85,9 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
                     _logger.LogError(e, "An error occured while moving tickets");
                 }
             }
+
+            /*var summaryBuilder =
+                SummaryBuilder.SummaryBuilderProvider.GetBuilderByTarget(_agileBoardsSettings.SummaryTarget);*/
         }
     }
 }
