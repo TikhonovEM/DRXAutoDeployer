@@ -10,7 +10,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.OData.Client;
 using Microsoft.OData.Extensions.Client;
-using Sungero.IntegrationService.Models.Generated.ProjectRequirement;
 using Newtonsoft.Json;
 
 namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
@@ -19,14 +18,14 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
     {
         private struct TicketTagPair
         {
-            public TicketTagPair(int ticketId, int ticketTagId)
+            public TicketTagPair(long ticketId, long ticketTagId)
             {
                 TicketId = ticketId;
                 TicketTagId = ticketTagId;
             }
             
-            public int TicketId { get; }
-            public int TicketTagId { get; }
+            public long TicketId { get; }
+            public long TicketTagId { get; }
         }
   
         private readonly ILogger _logger;
@@ -34,7 +33,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
         private readonly AgileBoardSettings _agileBoardsSettings;
         private readonly ActionSetting _action;
         private readonly List<TicketTagPair> _ticketTagsToRemove = new List<TicketTagPair>();
-        private readonly List<int> _ticketsToAddTag = new List<int>();
+        private readonly List<long> _ticketsToAddTag = new List<long>();
 
         public TagActionHandler(ILogger logger, Container client, AgileBoardSettings agileBoardsSettings, ActionSetting action)
         {
@@ -132,7 +131,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
                 return;
 
             const string deleteUriTemplate = "ITickets({0})/TicketsTags({1})";
-            var successfulRemovedIds = new List<int>();
+            var successfulRemovedIds = new List<long>();
             foreach (var ticketTagToRemove in _ticketTagsToRemove)
             {
                 try
@@ -167,7 +166,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
             }
 
             const string addUriTemplate = "ITickets({0})/TicketsTags";
-            var successfulAddedIds = new List<int>();
+            var successfulAddedIds = new List<long>();
             foreach (var ticketId in _ticketsToAddTag)
             {
                 try

@@ -17,7 +17,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
         private readonly AgileBoardSettings _agileBoardsSettings;
         private readonly string _columnFrom;
         private readonly string _columnTo;
-        private List<int> _ticketRefIds = new List<int>();
+        private List<long> _ticketRefIds = new List<long>();
 
         public ColumnActionHandler(ILogger logger, Container client, AgileBoardSettings agileBoardsSettings, ActionSetting action)
         {
