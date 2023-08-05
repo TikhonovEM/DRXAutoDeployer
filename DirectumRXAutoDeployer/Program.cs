@@ -22,7 +22,7 @@ namespace DirectumRXAutoDeployer
                 ConfigureServices(services);
                 var serviceProvider = services.BuildServiceProvider();
 
-                var deployed = serviceProvider.GetService<IDeployer>().TryDeployAsync();
+                var deployed = await serviceProvider.GetService<IDeployer>().TryDeployAsync();
             }
             catch (Exception ex)
             {
