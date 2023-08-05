@@ -62,7 +62,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
 
             if (columnFrom == null)
             {
-                _logger.LogError("TagActionHandler. Column with name '{0}' not found",  _agileBoardsSettings.ColumnFrom);
+                _logger.LogError("TagActionHandler. Column with name '{0}' not found",  _action.ColumnFrom);
                 return;
             }
 
@@ -91,7 +91,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
             
             if (columnFrom == null)
             {
-                _logger.LogError("TagActionHandler. Column with name '{0}' not found",  _agileBoardsSettings.ColumnFrom);
+                _logger.LogError("TagActionHandler. Column with name '{0}' not found",  _action.ColumnFrom);
                 return;
             }
 
