@@ -165,7 +165,7 @@ namespace DirectumRXAutoDeployer.Deploy
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
                 FileName = dtSection.ExePath,
-                Arguments = $"-n {login} -p {password} -d {_packagePath} -x"
+                Arguments = $"-n {login} -p {password} -d {_packagePath} -x -s"
             };
 
             using var dtProcess = new Process();

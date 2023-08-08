@@ -17,7 +17,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
         private readonly AgileBoardSettings _agileBoardsSettings;
         private readonly string _columnFrom;
         private readonly string _columnTo;
-        private List<int> _ticketRefIds = new List<int>();
+        private List<long> _ticketRefIds = new List<long>();
         private List<TicketInfo> _ticketInfos = new List<TicketInfo>();
 
         public ColumnActionHandler(ILogger logger, Container client, AgileBoardSettings agileBoardsSettings, ActionSetting action)
@@ -40,7 +40,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
 
             if (columnFrom == null)
             {
-                _logger.LogError("ColumnActionHandler. Column with name '{0}' not found",  _agileBoardsSettings.ColumnFrom);
+                _logger.LogError("ColumnActionHandler. Column with name '{0}' not found", _columnFrom);
                 return;
             }
 
@@ -48,7 +48,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
             _ticketInfos = columnFrom.Tickets.Select(t => new TicketInfo(t.Ticket.Name, null)).ToList();
 
             if (!_ticketRefIds.Any())
-                _logger.LogWarning("ColumnActionHandler. Nothing to move from '{0}'",  _agileBoardsSettings.ColumnFrom);
+                _logger.LogWarning("ColumnActionHandler. Nothing to move from '{0}'", _columnFrom);
         }
 
         public async Task HandleFinishAsync()
@@ -62,7 +62,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
             
             if (columnTo == null)
             {
-                _logger.LogError("ColumnActionHandler. Column with name '{0}' not found",  _agileBoardsSettings.ColumnTo);
+                _logger.LogError("ColumnActionHandler. Column with name '{0}' not found",  _columnTo);
                 return;
             }
 
@@ -76,8 +76,8 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
 
                     _logger.LogInformation("Tickets with ids '{0}' moved from '{1}' to '{2}'. New ref ids - '{3}'",
                         string.Join(',', _ticketRefIds),
-                        _agileBoardsSettings.ColumnFrom,
-                        _agileBoardsSettings.ColumnTo,
+                        _columnFrom,
+                        _columnTo,
                         string.Join(',', result.NewRefIds));
                 }
                 catch (Exception e)
