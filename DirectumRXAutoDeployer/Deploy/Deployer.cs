@@ -111,7 +111,7 @@ namespace DirectumRXAutoDeployer.Deploy
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
                 FileName = ddsSettings.ExePath,
-                Arguments = $"-d {_packagePath} -c {ddsSettings.PackageInfoPath}"
+                Arguments = string.Format(ddsSettings.ExeArguments, _packagePath, ddsSettings.PackageInfoPath)
             };
 
             using var ddsProcess = new Process();
@@ -165,7 +165,7 @@ namespace DirectumRXAutoDeployer.Deploy
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
                 FileName = dtSection.ExePath,
-                Arguments = $"-n {login} -p {password} -d {_packagePath} -x -s"
+                Arguments = string.Format(dtSection.ExeArguments, login, password, _packagePath)
             };
 
             using var dtProcess = new Process();
