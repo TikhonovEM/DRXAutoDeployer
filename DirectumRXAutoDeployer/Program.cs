@@ -22,6 +22,9 @@ namespace DirectumRXAutoDeployer
                 ConfigureServices(services);
                 var serviceProvider = services.BuildServiceProvider();
 
+                // Не по православному, конечно, но и я программист не полноценный, поэтому нормальный способ получения зависимостей в рантайме не придумал(
+                ServiceProviderFactory.ServiceProvider = serviceProvider;
+
                 var deployed = await serviceProvider.GetService<IDeployer>().TryDeployAsync();
             }
             catch (Exception ex)

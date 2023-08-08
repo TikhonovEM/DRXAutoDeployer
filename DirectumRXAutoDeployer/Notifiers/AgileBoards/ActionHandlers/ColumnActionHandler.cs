@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AgileBoards;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.OData.Extensions.Client;
 using Sungero.IntegrationService;
@@ -28,7 +29,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
             _columnFrom = action.ColumnFrom;
             _columnTo = action.ColumnTo;
         }
-        
+
         public async Task HandleStartAsync()
         {
             var columnFrom = (await _client.IColumns
@@ -59,10 +60,10 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
             var columnTo = (await _client.IColumns.Where(c => c.Name == _columnTo &&
                                                               c.BoardId == _agileBoardsSettings.BoardId).ExecuteAsync<IColumnDto>())
                 .FirstOrDefault();
-            
+
             if (columnTo == null)
             {
-                _logger.LogError("ColumnActionHandler. Column with name '{0}' not found",  _columnTo);
+                _logger.LogError("ColumnActionHandler. Column with name '{0}' not found", _columnTo);
                 return;
             }
 
@@ -84,10 +85,23 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
                 {
                     _logger.LogError(e, "An error occured while moving tickets");
                 }
+
+                if (!string.IsNullOrWhiteSpace(_agileBoardsSettings.SummaryTarget))
+                {
+                    var summaryTarget = (IMessengerNotifier)ServiceProviderFactory.ServiceProvider.GetServices<INotifier>()
+                        .FirstOrDefault(n => n is IMessengerNotifier mn && mn.Name == _agileBoardsSettings.SummaryTarget);
+
+                    if (summaryTarget != null)
+                    {
+                        var summaryBuilder = SummaryBuilder.SummaryBuilderProvider.GetBuilderByTarget(_agileBoardsSettings.SummaryTarget);
+                        var summary = summaryBuilder.GetSummaryText(_ticketInfos);
+                        await summaryTarget.SendMessage(summary);
+                    }
+                }
+                
             }
 
-            /*var summaryBuilder =
-                SummaryBuilder.SummaryBuilderProvider.GetBuilderByTarget(_agileBoardsSettings.SummaryTarget);*/
+
         }
     }
 }

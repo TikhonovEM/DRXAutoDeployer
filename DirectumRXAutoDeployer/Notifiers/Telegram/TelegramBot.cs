@@ -11,6 +11,8 @@ namespace DirectumRXAutoDeployer.Notifiers.Telegram
         private readonly string _finishMessage;
         private readonly string _errorMessage;
 
+        public string Name { get; } = "Telegram";
+
         public TelegramBot(TelegramSettings settings)
         {
             _botClient = new TelegramBotClient(settings.Token);

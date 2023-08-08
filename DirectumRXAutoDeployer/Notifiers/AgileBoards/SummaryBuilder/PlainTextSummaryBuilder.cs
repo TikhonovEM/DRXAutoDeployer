@@ -12,9 +12,9 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.SummaryBuilder
         {
             var sb = new StringBuilder();
             var ticketInfos = tickets.ToList();
-            for (var i = 0; i < ticketInfos.Count(); i++)
+            for (var i = 0; i < ticketInfos.Count; i++)
             {
-                sb.AppendFormat(ListElementFormat, i + 1, ticketInfos[0]);
+                sb.AppendFormat(ListElementFormat, i + 1, ticketInfos[i]);
                 sb.AppendLine();
             }
 
