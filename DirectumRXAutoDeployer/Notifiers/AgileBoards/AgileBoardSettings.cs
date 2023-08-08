@@ -8,6 +8,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
         public long BoardId { get; set; }
         public string IntegrationServiceUri { get; set; }
         public string AppId { get; set; }
+        public string SummaryTarget { get; set; }
         public List<ActionSetting> Actions { get; set; }
     }
 }

@@ -10,6 +10,8 @@
         
         public string TagName { get; set; }
 
+        public string SummaryHeader { get; set; }
+
         public TagActionType Type { get; set; }
     }
 }

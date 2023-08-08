@@ -42,7 +42,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
             _agileBoardsSettings = agileBoardsSettings;
             _action = action;
         }
-        
+
         public async Task HandleStartAsync()
         {
             if (_action.Type == TagActionType.Remove)

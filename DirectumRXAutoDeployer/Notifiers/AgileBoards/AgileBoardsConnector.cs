@@ -28,7 +28,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
             {
                 _logger.LogWarning("List of actions is empty. Nothing to update.");
                 return;
-            }
+            }           
 
             foreach (var action in settings.Actions)
             {
