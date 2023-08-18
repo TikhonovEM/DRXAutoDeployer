@@ -5,6 +5,7 @@ using System.Text;
 using DirectumRXAutoDeployer.Configuration;
 using DirectumRXAutoDeployer.Notifiers;
 using DirectumRXAutoDeployer.Notifiers.AgileBoards;
+using DirectumRXAutoDeployer.Notifiers.Mattermost;
 using DirectumRXAutoDeployer.Notifiers.Telegram;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +33,7 @@ namespace DirectumRXAutoDeployer
                 {
                     "telegram" => services.AddTelegramBot(setting),
                     "agileboards" => services.AddAgileBoardsODataClient(setting),
+                    "mattermost" => services.AddMattermostClient(setting),
                     _ => services
                 };
             }
@@ -64,6 +66,15 @@ namespace DirectumRXAutoDeployer
                 });
 
             services.AddScoped<INotifier, AgileBoardsConnector>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddMattermostClient(this IServiceCollection services, IConfigurationSection mattermostSection)
+        {
+            var mattermostSettings = mattermostSection.Get<MattermostSettings>();
+            services.AddSingleton(mattermostSettings);
+            services.AddScoped<INotifier, MattermostClient>();
 
             return services;
         }
