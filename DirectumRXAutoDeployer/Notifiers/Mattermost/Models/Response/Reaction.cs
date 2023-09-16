@@ -5,6 +5,6 @@
         public string user_id { get; set; }
         public string post_id { get; set; }
         public string emoji_name { get; set; }
-        public int create_at { get; set; }
+        public long create_at { get; set; }
     }
 }

@@ -5,10 +5,10 @@ namespace DirectumRXAutoDeployer.Notifiers.Mattermost.Models.Response
     public class CreatePostResponse
     {
         public string id { get; set; }
-        public int create_at { get; set; }
-        public int update_at { get; set; }
-        public int delete_at { get; set; }
-        public int edit_at { get; set; }
+        public long create_at { get; set; }
+        public long update_at { get; set; }
+        public long delete_at { get; set; }
+        public long edit_at { get; set; }
         public string user_id { get; set; }
         public string channel_id { get; set; }
         public string root_id { get; set; }

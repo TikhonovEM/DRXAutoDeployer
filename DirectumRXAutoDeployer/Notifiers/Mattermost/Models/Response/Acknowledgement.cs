@@ -4,6 +4,6 @@
     {
         public string user_id { get; set; }
         public string post_id { get; set; }
-        public int acknowledged_at { get; set; }
+        public long acknowledged_at { get; set; }
     }
 }
