@@ -26,7 +26,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
         {
             var ticketsToAddTag = columnFrom.Tickets.Where(t => t.Ticket != null &&
                                                                 t.Ticket.TicketsTags.All(tt => tt?.TicketTag?.Name != _action.TagName))
-                .Select(t => t.Ticket.Id)
+                
                 .ToList();
 
             if (!ticketsToAddTag.Any())
@@ -35,7 +35,8 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
                 return;
             }
 
-            _ticketsToAddTag.AddRange(ticketsToAddTag);
+            _ticketsToAddTag.AddRange(ticketsToAddTag.Select(t => t.Ticket.Id));
+            _ticketInfos.AddRange(ticketsToAddTag.Select(t => new TicketInfo(t.Ticket.Name, null)).ToList());
         }
 
         public override async Task HandleFinishTagActionAsync(HttpClient httpClient)

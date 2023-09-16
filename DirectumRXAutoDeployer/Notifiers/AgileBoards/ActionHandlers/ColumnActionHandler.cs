@@ -17,8 +17,8 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
         private readonly Container _client;
         private readonly AgileBoardSettings _agileBoardsSettings;
         private readonly ActionSetting _action;
-        private List<long> _ticketRefIds = new List<long>();
-        private List<TicketInfo> _ticketInfos = new List<TicketInfo>();
+        private readonly List<long> _ticketRefIds = new List<long>();
+        private readonly List<TicketInfo> _ticketInfos = new List<TicketInfo>();
 
         public ColumnActionHandler(ILogger logger, Container client, AgileBoardSettings agileBoardsSettings, ActionSetting action)
         {
@@ -43,8 +43,8 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
                 return;
             }
 
-            _ticketRefIds = columnFrom.Tickets.Select(t => t.Id).ToList();
-            _ticketInfos = columnFrom.Tickets.Select(t => new TicketInfo(t.Ticket.Name, null)).ToList();
+            _ticketRefIds.AddRange(columnFrom.Tickets.Select(t => t.Id).ToList());
+            _ticketInfos.AddRange(columnFrom.Tickets.Select(t => new TicketInfo(t.Ticket.Name, null)).ToList());
 
             if (!_ticketRefIds.Any())
                 _logger.LogWarning("ColumnActionHandler. Nothing to move from '{0}'", _action.ColumnFrom);

@@ -11,6 +11,7 @@ using System.Text;
 using Microsoft.OData.Client;
 using Microsoft.OData.Extensions.Client;
 using Newtonsoft.Json;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
 {
@@ -20,6 +21,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
         protected readonly Container _client;
         protected readonly AgileBoardSettings _agileBoardsSettings;
         protected readonly ActionSetting _action;
+        protected readonly List<TicketInfo> _ticketInfos = new List<TicketInfo>();
 
         public TagActionHandler(ILogger logger, Container client, AgileBoardSettings agileBoardsSettings, ActionSetting action)
         {
@@ -58,6 +60,22 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
                 Convert.ToBase64String(Encoding.ASCII.GetBytes(_agileBoardsSettings.Token)));
 
             await HandleFinishTagActionAsync(httpClient);
+
+            if (_ticketInfos.Any() && !string.IsNullOrWhiteSpace(_agileBoardsSettings.SummaryTarget))
+            {
+                var summaryTarget = (IMessengerNotifier)ServiceProviderFactory.ServiceProvider.GetServices<INotifier>()
+                    .FirstOrDefault(n => n is IMessengerNotifier mn && mn.Name == _agileBoardsSettings.SummaryTarget);
+
+                if (summaryTarget != null)
+                {
+                    var summaryBuilder = SummaryBuilder.SummaryBuilderProvider.GetBuilderByTarget(_agileBoardsSettings.SummaryTarget);
+                    var summary = summaryBuilder.GetSummaryText(_ticketInfos);
+                    if (!string.IsNullOrWhiteSpace(_action.SummaryHeader))
+                        summary = $"{_action.SummaryHeader}{Environment.NewLine}{summary}";
+                    await summaryTarget.SendMessage(summary);
+                }
+
+            }
         }
 
         public abstract void HandleStartTagAction(IColumnDto columnFrom);
