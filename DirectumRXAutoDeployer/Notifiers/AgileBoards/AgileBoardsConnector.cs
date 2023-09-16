@@ -39,7 +39,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
                         break;
                     
                     case ActionTarget.Tag: 
-                        _actionHandlers.Add(new TagActionHandler(logger, client, settings, action));
+                        _actionHandlers.Add(TagActionHandler.CreateHandler(logger, client, settings, action));
                         break;
                     default: break;
                 }
