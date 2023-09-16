@@ -55,11 +55,15 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
             if (_ticketRefIds == null || !_ticketRefIds.Any())
                 return;
 
-            var columnTo = (await _client.IColumns.Where(c => c.Name == _action.ColumnTo &&
-                                                              c.BoardId == _agileBoardsSettings.BoardId).ExecuteAsync<IColumnDto>())
+            var board = (await _client.IBoards
+                .Expand("Columns($expand=Column")
+                .Where(b => b.Id == _agileBoardsSettings.BoardId)
+                .ExecuteAsync<IBoardDto>())
                 .FirstOrDefault();
 
-            if (columnTo == null)
+            var columnToRef = board?.Columns.FirstOrDefault(c => c.Column != null && c.Column.Name == _action.ColumnTo);
+
+            if (columnToRef == null)
             {
                 _logger.LogError("ColumnActionHandler. Column with name '{0}' not found", _action.ColumnTo);
                 return;
@@ -68,7 +72,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
             try
             {
                 var result = await _client.AgileBoards.MoveTicket(_agileBoardsSettings.AppId,
-                        _agileBoardsSettings.BoardId, _ticketRefIds, columnTo.Id, 0)
+                        _agileBoardsSettings.BoardId, _ticketRefIds, columnToRef.Id, 0)
                     .GetValueAsync();
 
                 _logger.LogInformation("Tickets with ids '{0}' moved from '{1}' to '{2}'. New ref ids - '{3}'",
