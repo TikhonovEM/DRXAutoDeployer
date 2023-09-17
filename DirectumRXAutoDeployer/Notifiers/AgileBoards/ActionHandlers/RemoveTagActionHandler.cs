@@ -48,7 +48,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
 
             _ticketTagsToRemove.AddRange(ticketTagsToRemove);
             _ticketInfos.AddRange(columnFrom.Tickets.Where(t => t.Ticket.TicketsTags.Any(tt => tt?.TicketTag?.Name == _action.TagName))
-                .Select(t => new TicketInfo(t.Ticket.Name, null)).ToList());
+                .Select(t => new TicketInfo(t.Ticket.Name, HyperlinksUtils.GetTicket(_agileBoardsSettings.BoardId, t.Ticket.Id))).ToList());
         }
 
         public override async Task HandleFinishTagActionAsync(HttpClient httpClient)

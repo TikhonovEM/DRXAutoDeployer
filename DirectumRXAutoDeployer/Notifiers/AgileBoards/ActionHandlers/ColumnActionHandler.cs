@@ -44,7 +44,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
             }
 
             _ticketRefIds.AddRange(columnFrom.Tickets.Select(t => t.Id).ToList());
-            _ticketInfos.AddRange(columnFrom.Tickets.Select(t => new TicketInfo(t.Ticket.Name, null)).ToList());
+            _ticketInfos.AddRange(columnFrom.Tickets.Select(t => new TicketInfo(t.Ticket.Name, HyperlinksUtils.GetTicket(_agileBoardsSettings.BoardId, t.Ticket.Id))).ToList());
 
             if (!_ticketRefIds.Any())
                 _logger.LogWarning("ColumnActionHandler. Nothing to move from '{0}'", _action.ColumnFrom);

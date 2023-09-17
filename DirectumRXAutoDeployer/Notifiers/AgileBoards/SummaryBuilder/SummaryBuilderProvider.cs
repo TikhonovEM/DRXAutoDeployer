@@ -4,6 +4,9 @@
     {
         public static ISummaryBuilder GetBuilderByTarget(string summaryTarget)
         {
+            if (HyperlinksUtils.IsConfigured())
+                return new MarkdownTextSummaryBuilder();
+
             return new PlainTextSummaryBuilder();
         }
     }

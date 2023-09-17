@@ -36,7 +36,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
             }
 
             _ticketsToAddTag.AddRange(ticketsToAddTag.Select(t => t.Ticket.Id));
-            _ticketInfos.AddRange(ticketsToAddTag.Select(t => new TicketInfo(t.Ticket.Name, null)).ToList());
+            _ticketInfos.AddRange(ticketsToAddTag.Select(t => new TicketInfo(t.Ticket.Name, HyperlinksUtils.GetTicket(_agileBoardsSettings.BoardId, t.Ticket.Id))).ToList());
         }
 
         public override async Task HandleFinishTagActionAsync(HttpClient httpClient)

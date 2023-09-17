@@ -9,6 +9,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards
         public string IntegrationServiceUri { get; set; }
         public string AppId { get; set; }
         public string SummaryTarget { get; set; }
+        public string TicketHyperlinkTemplate { get; set; }
         public List<ActionSetting> Actions { get; set; }
     }
 }
