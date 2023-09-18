@@ -56,7 +56,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
                 return;
 
             var board = (await _client.IBoards
-                .Expand("Columns($expand=Column")
+                .Expand("Columns($expand=Column)")
                 .Where(b => b.Id == _agileBoardsSettings.BoardId)
                 .ExecuteAsync<IBoardDto>())
                 .FirstOrDefault();
