@@ -42,7 +42,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
 
             if (!ticketTagsToRemove.Any())
             {
-                _logger.LogWarning("TagActionHandler. There are not tickets with tag '{0}' in column '{1}'", _action.TagName, _action.ColumnFrom);
+                _logger.LogWarning("TagActionHandler. There are no tickets with tag '{0}' in column '{1}'", _action.TagName, _action.ColumnFrom);
                 return;
             }
 

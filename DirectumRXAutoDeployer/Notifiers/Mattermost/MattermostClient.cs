@@ -16,7 +16,7 @@ namespace DirectumRXAutoDeployer.Notifiers.Mattermost
 
         private readonly HttpClient _httpClient;
         private readonly MattermostSettings _settings;
-        private string _rootId;
+        private string _rootId = null;
 
         private const string PostsUri = "api/v4/posts";
 
@@ -57,10 +57,10 @@ namespace DirectumRXAutoDeployer.Notifiers.Mattermost
 
             var httpResponse = await _httpClient.PostAsJsonAsync(PostsUri, postRequest);
 
-            if (_settings.OneThread)
+            if (_settings.OneThread && _rootId == null)
             {
                 var postResponse = JsonConvert.DeserializeObject<Models.Response.CreatePostResponse>(await httpResponse.Content.ReadAsStringAsync());
-                _rootId = postResponse?.root_id;
+                _rootId = postResponse?.id;
             }
 
         }

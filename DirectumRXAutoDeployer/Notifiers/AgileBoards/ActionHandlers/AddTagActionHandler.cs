@@ -31,7 +31,7 @@ namespace DirectumRXAutoDeployer.Notifiers.AgileBoards.ActionHandlers
 
             if (!ticketsToAddTag.Any())
             {
-                _logger.LogWarning("TagActionHandler. There are not tickets to add tag '{0}' in column '{1}'", _action.TagName, _action.ColumnFrom);
+                _logger.LogWarning("TagActionHandler. There are no tickets to add tag '{0}' in column '{1}'", _action.TagName, _action.ColumnFrom);
                 return;
             }
 
