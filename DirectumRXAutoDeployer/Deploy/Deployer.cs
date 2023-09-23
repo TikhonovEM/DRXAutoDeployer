@@ -156,7 +156,7 @@ namespace DirectumRXAutoDeployer.Deploy
             }
 
             foreach (var messengerNotifier in _messengerNotifiers)
-                messengerNotifier.NotifyAboutStartBuildPackage();
+                messengerNotifier.NotifyAboutFinishBuildPackage();
 
             _logger.LogInformation("BuildDevelopmentPackage. Finish");
         }
