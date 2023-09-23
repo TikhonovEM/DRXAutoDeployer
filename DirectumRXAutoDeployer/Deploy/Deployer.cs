@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using DirectumRXAutoDeployer.Configuration;
 using DirectumRXAutoDeployer.Notifiers;
@@ -15,6 +16,7 @@ namespace DirectumRXAutoDeployer.Deploy
         private readonly AppSettings _appSettings;
         private readonly ILogger<Deployer> _logger;
         private readonly IEnumerable<INotifier> _notifiers;
+        private readonly IEnumerable<IMessengerNotifier> _messengerNotifiers;
         private string _packagePath;
 
         public Deployer(AppSettings appSettings, ILogger<Deployer> logger, IEnumerable<INotifier> notifiers)
@@ -22,6 +24,7 @@ namespace DirectumRXAutoDeployer.Deploy
             _appSettings = appSettings;
             _logger = logger;
             _notifiers = notifiers;
+            _messengerNotifiers = notifiers.OfType<IMessengerNotifier>().ToList();
         }
 
         public async Task<bool> TryDeployAsync()
@@ -52,6 +55,10 @@ namespace DirectumRXAutoDeployer.Deploy
         private void PullUpdatesFromGit()
         {
             _logger.LogInformation("PullUpdatesFromGit. Start");
+
+            foreach (var messengerNotifier in _messengerNotifiers)
+                messengerNotifier.NotifyAboutStartPullFromGit();
+
             var gitSettings = _appSettings.GitRepositoriesSettings;
             ValidationHelper.ValidateGitSection(gitSettings, _logger);
 
@@ -71,6 +78,8 @@ namespace DirectumRXAutoDeployer.Deploy
                 ExecuteGitCommand(gitPsi, "clean -x -d -f", sourcesPath);
             }
 
+            foreach (var messengerNotifier in _messengerNotifiers)
+                messengerNotifier.NotifyAboutFinishPullFromGit();
 
             _logger.LogInformation("PullUpdatesFromGit. Finish");
         }
@@ -97,6 +106,10 @@ namespace DirectumRXAutoDeployer.Deploy
         private void BuildDevelopmentPackage()
         {
             _logger.LogInformation("BuildDevelopmentPackage. Start");
+
+            foreach (var messengerNotifier in _messengerNotifiers)
+                messengerNotifier.NotifyAboutStartBuildPackage();
+
             var ddsSettings = _appSettings.DevelopmentStudioSettings;
             ValidationHelper.ValidateDdsSection(ddsSettings, _logger);
 
@@ -129,8 +142,7 @@ namespace DirectumRXAutoDeployer.Deploy
                 if (!string.IsNullOrEmpty(stdout))
                     _logger.LogInformation(stdout);
 
-                ddsProcess.WaitForExit();
-                _logger.LogInformation("BuildDevelopmentPackage. Finish");
+                ddsProcess.WaitForExit();                
 
                 if (ddsProcess.ExitCode > 0)
                 {
@@ -142,11 +154,19 @@ namespace DirectumRXAutoDeployer.Deploy
             {
                 ddsProcess?.Close();
             }
+
+            foreach (var messengerNotifier in _messengerNotifiers)
+                messengerNotifier.NotifyAboutStartBuildPackage();
+
+            _logger.LogInformation("BuildDevelopmentPackage. Finish");
         }
 
         private void DeployDevelopmentPackage()
         {
             _logger.LogInformation("DeployDevelopmentPackage. Start");
+
+            foreach (var messengerNotifier in _messengerNotifiers)
+                messengerNotifier.NotifyAboutStartDeployPackage();
 
             var dtSection = _appSettings.DeploymentToolCoreSettings;
             ValidationHelper.ValidateDtSection(dtSection, _logger);
@@ -183,8 +203,7 @@ namespace DirectumRXAutoDeployer.Deploy
                 if (!string.IsNullOrEmpty(stdout))
                     _logger.LogInformation(stdout);
 
-                dtProcess.WaitForExit();
-                _logger.LogInformation("DeployDevelopmentPackage. Finish");
+                dtProcess.WaitForExit();                
 
                 if (dtProcess.ExitCode > 0)
                 {
@@ -208,6 +227,11 @@ namespace DirectumRXAutoDeployer.Deploy
                     _logger.LogError(e, "Cannot delete development package");
                 }
             }
+
+            foreach (var messengerNotifier in _messengerNotifiers)
+                messengerNotifier.NotifyAboutFinishDeployPackage();
+
+            _logger.LogInformation("DeployDevelopmentPackage. Finish");
         }
     }
 }

@@ -64,5 +64,41 @@ namespace DirectumRXAutoDeployer.Notifiers.Mattermost
             }
 
         }
+
+        public async Task NotifyAboutStartPullFromGit()
+        {
+            if (!string.IsNullOrWhiteSpace(_settings.StartPullFromGitMessage))
+                await SendMessage(_settings.StartPullFromGitMessage);
+        }
+
+        public async Task NotifyAboutFinishPullFromGit()
+        {
+            if (!string.IsNullOrWhiteSpace(_settings.FinishPullFromGitMessage))
+                await SendMessage(_settings.FinishPullFromGitMessage);
+        }
+
+        public async Task NotifyAboutStartBuildPackage()
+        {
+            if (!string.IsNullOrWhiteSpace(_settings.StartBuildPackageMessage))
+                await SendMessage(_settings.StartBuildPackageMessage);
+        }
+
+        public async Task NotifyAboutFinishBuildPackage()
+        {
+            if (!string.IsNullOrWhiteSpace(_settings.FinishBuildPackageMessage))
+                await SendMessage(_settings.FinishBuildPackageMessage);
+        }
+
+        public async Task NotifyAboutStartDeployPackage()
+        {
+            if (!string.IsNullOrWhiteSpace(_settings.StartDeployPackageMessage))
+                await SendMessage(_settings.StartDeployPackageMessage);
+        }
+
+        public async Task NotifyAboutFinishDeployPackage()
+        {
+            if (!string.IsNullOrWhiteSpace(_settings.FinishDeployPackageMessage))
+                await SendMessage(_settings.FinishDeployPackageMessage);
+        }
     }
 }

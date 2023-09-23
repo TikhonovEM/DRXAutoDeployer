@@ -27,7 +27,13 @@
             "ChatIdentifier": "", // Идентификатор чата, куда бот будет слать уведомления.
             "StartMessage": "",
             "FinishMessage": "",
-            "ErrorMessage": ""
+            "ErrorMessage": "",
+            "StartPullFromGitMessage": "",
+            "FinishPullFromGitMessage": "",
+            "StartBuildPackageMessage": "",
+            "FinishBuildPackageMessage": "",
+            "StartDeployPackageMessage": "",
+            "FinishDeployPackageMessage": ""
         },
         { // Секция с настройками уведомлений в Mattermost
             "Target": "Mattermost",
@@ -37,7 +43,13 @@
             "OneThread": true, // Признак, отвечающий за отправку всех сообщений в один тред.
             "StartMessage": "",
             "FinishMessage": "",
-            "ErrorMessage": ""
+            "ErrorMessage": "",
+            "StartPullFromGitMessage": "",
+            "FinishPullFromGitMessage": "",
+            "StartBuildPackageMessage": "",
+            "FinishBuildPackageMessage": "",
+            "StartDeployPackageMessage": "",
+            "FinishDeployPackageMessage": ""
         },
         { // Секция с настройками работы с Agile-досками
             "Target": "AgileBoards",

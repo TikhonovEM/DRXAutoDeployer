@@ -6,14 +6,11 @@ using System.Threading.Tasks;
 
 namespace DirectumRXAutoDeployer.Notifiers.Mattermost
 {
-    public class MattermostSettings
+    public class MattermostSettings : MessengerNotifierSettings
     {
         public string Server { get; set; }
         public string Token { get; set; }
         public string ChannelId { get; set; }
         public bool OneThread { get; set; }
-        public string StartMessage { get; set; }
-        public string FinishMessage { get; set; }
-        public string ErrorMessage { get; set; }
     }
 }

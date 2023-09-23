@@ -6,5 +6,17 @@ namespace DirectumRXAutoDeployer.Notifiers
     {
         string Name { get; }
         Task SendMessage(string message);
+
+        Task NotifyAboutStartPullFromGit();
+
+        Task NotifyAboutFinishPullFromGit();
+
+        Task NotifyAboutStartBuildPackage();
+
+        Task NotifyAboutFinishBuildPackage();
+
+        Task NotifyAboutStartDeployPackage();
+
+        Task NotifyAboutFinishDeployPackage();
     }
 }
